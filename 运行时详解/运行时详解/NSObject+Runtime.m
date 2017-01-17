@@ -9,6 +9,7 @@
 
 #import "NSObject+Runtime.h"
 #import <objc/runtime.h>
+const char * kPropertyListKey = "kPropertyListKey";
 
 @implementation NSObject (Runtime)
 
@@ -30,6 +31,11 @@
 
 + (NSArray *)cz_objcPropertites
 {
+   NSArray * ptyList = objc_getAssociatedObject(self, kPropertyListKey);
+    if (ptyList != nil) {
+        return ptyList;
+    }
+    
     NSMutableArray *array = [NSMutableArray array];
    // return @[@"hello"];
     unsigned int count = 0;
@@ -41,6 +47,7 @@
         [array addObject:name];
     }
     free(proList);
+    objc_setAssociatedObject(self, kPropertyListKey, array.copy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     return array.copy;
 }
 
